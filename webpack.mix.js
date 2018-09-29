@@ -1,4 +1,4 @@
-const mix = require('laravel-mix');
+// const mix = require('laravel-mix');
 
 /*
  |--------------------------------------------------------------------------
@@ -11,5 +11,44 @@ const mix = require('laravel-mix');
  |
  */
 
+const path = require('path');
+const mix = require('laravel-mix');
+
 mix.js('resources/js/app.js', 'public/js')
-   .sass('resources/sass/app.scss', 'public/css');
+   .sass('resources/sass/app.scss', 'public/css')
+    .sourceMaps()
+    .disableNotifications();
+
+if (mix.inProduction()) {
+    mix.version();
+
+    mix.extract([
+        'vue',
+        'vform',
+        'axios',
+        'vuex',
+        'jquery',
+        'popper.js',
+        'vue-meta',
+        'js-cookie',
+        'vue-router',
+        'vuex-router-sync',
+    ]);
+}
+
+mix.webpackConfig({
+    plugins: [
+        // new BundleAnalyzerPlugin()
+    ],
+    resolve: {
+        extensions: ['.js', '.json', '.vue'],
+        alias: {
+            '~': path.join(__dirname, './resources/assets/js'),
+        },
+    },
+    output: {
+        chunkFilename: 'js/[name].[chunkhash].js',
+        publicPath: mix.config.hmr ? '//localhost:8080' : '/',
+    },
+});
+
